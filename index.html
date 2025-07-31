@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -61,22 +60,16 @@
   </style>
 </head>
 <body>
-  <audio id="bg-music" src="Grx.mp3" loop></audio>
-
-  <div class="input-section" id="inputSection">
+  <audio id="bg-music" src="Grx.mp3" loop></audio>  <div class="input-section" id="inputSection">
     <h2>What’s your name?</h2>
     <input type="text" id="nameInput" placeholder="Enter your full name" />
     <br />
     <button onclick="checkName()">Submit</button>
     <div class="message" id="message"></div>
-  </div>
-
-  <div class="notebook" id="letter">
+  </div>  <div class="notebook" id="letter">
     <div class="entry" id="typedText"></div>
     <button id="replayBtn" onclick="replayLetter()" style="display:none; margin-top: 2rem;">🔁 Replay Letter</button>
-  </div>
-
-  <script>
+  </div>  <script>
     const correctName = "Manju Gurung";
     const letterText = `Dear Meezna,
 
@@ -163,15 +156,20 @@ Sabdpremi`;
         v.name.toLowerCase().includes("english") && !v.name.toLowerCase().includes("female")
       );
 
-      bgMusic.pause(); // Don’t play music until voice finishes
-      typeLetter(textBox, replayBtn);
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+
+      const totalDuration = 30000; // 30 seconds
+      const intervalTime = totalDuration / letterText.length;
+
+      typeLetter(textBox, replayBtn, intervalTime);
     }
 
-    function typeLetter(textBox, replayBtn) {
+    function typeLetter(textBox, replayBtn, intervalTime) {
       if (index < letterText.length) {
         textBox.innerText += letterText.charAt(index);
         index++;
-        typingInterval = setTimeout(() => typeLetter(textBox, replayBtn), 30);
+        typingInterval = setTimeout(() => typeLetter(textBox, replayBtn, intervalTime), intervalTime);
       } else {
         speakFullLetter(replayBtn);
       }
@@ -185,7 +183,6 @@ Sabdpremi`;
 
       utter.onend = () => {
         bgMusic.volume = 0.3;
-        bgMusic.currentTime = 0;
         bgMusic.play();
         replayBtn.style.display = "inline-block";
       };
@@ -197,10 +194,10 @@ Sabdpremi`;
       speechSynthesis.cancel();
       clearTimeout(typingInterval);
       bgMusic.pause();
+      bgMusic.currentTime = 0;
       startLetter();
     }
 
     window.speechSynthesis.onvoiceschanged = () => {};
-  </script>
-</body>
+  </script></body>
 </html>
