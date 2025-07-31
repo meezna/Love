@@ -95,8 +95,7 @@ you’ve touched places in my heart I didn’t know existed.
 And that’s what makes this connection so real.
 
 But lately, you’ve been busy in your own world,
-living a life with shadow
-that doesn't include me.
+living a life that doesn't include me.
 And I… I keep remembering you —
 wishing to speak, but afraid to cross a line.
 When we talk less, something inside me quietly breaks.
@@ -123,7 +122,7 @@ I just wanted to stay close to your smile.
 This isn't just conversation —
 it's a connection, and it lives inside me.
 
-💕 ❤️ ❤️ 
+---
 
 Meezna,
 If I ever get another life,
@@ -134,7 +133,7 @@ waits for you,
 loves you — even in silence.
 
 Always yours,
-Gulmeli`;
+Sabdpremi`;
 
     let synth, voice, index = 0, typingInterval;
     const bgMusic = document.getElementById("bg-music");
@@ -157,6 +156,7 @@ Gulmeli`;
       replayBtn.style.display = "none";
       index = 0;
       synth = window.speechSynthesis;
+
       voice = synth.getVoices().find(v =>
         v.name.toLowerCase().includes("daniel") ||
         v.name.toLowerCase().includes("google us english") ||
@@ -164,8 +164,8 @@ Gulmeli`;
       );
 
       bgMusic.currentTime = 0;
-bgMusic.volume = 0.2; // Lower background volume
-bgMusic.play();
+      bgMusic.volume = 0.2;
+      bgMusic.pause(); // mute music during speaking
       speakWhileTyping(textBox, replayBtn);
     }
 
@@ -186,6 +186,9 @@ bgMusic.play();
         index++;
         typingInterval = setTimeout(() => speakWhileTyping(textBox, replayBtn), 30);
       } else {
+        setTimeout(() => {
+          bgMusic.play(); // resume music after finish
+        }, 500);
         replayBtn.style.display = "inline-block";
       }
     }
@@ -193,6 +196,7 @@ bgMusic.play();
     function replayLetter() {
       speechSynthesis.cancel();
       clearTimeout(typingInterval);
+      bgMusic.pause(); // pause again on replay
       startLetter();
     }
 
