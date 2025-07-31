@@ -163,41 +163,40 @@ Sabdpremi`;
         v.name.toLowerCase().includes("english") && !v.name.toLowerCase().includes("female")
       );
 
-      bgMusic.pause(); // no music at all during speaking
-      speakWhileTyping(textBox, replayBtn);
+      bgMusic.pause(); // Don’t play music until voice finishes
+      typeLetter(textBox, replayBtn);
     }
 
-    function speakWhileTyping(textBox, replayBtn) {
+    function typeLetter(textBox, replayBtn) {
       if (index < letterText.length) {
-        const char = letterText.charAt(index);
-        textBox.innerText += char;
-
-        if (char === '.' || char === '\n' || char === '?' || char === '!') {
-          const lastLine = textBox.innerText.split('\n').slice(-1)[0].trim();
-          const utter = new SpeechSynthesisUtterance(lastLine);
-          if (voice) utter.voice = voice;
-          utter.rate = 1;
-          utter.pitch = 1;
-          synth.speak(utter);
-        }
-
+        textBox.innerText += letterText.charAt(index);
         index++;
-        typingInterval = setTimeout(() => speakWhileTyping(textBox, replayBtn), 30);
+        typingInterval = setTimeout(() => typeLetter(textBox, replayBtn), 30);
       } else {
-        // Wait a bit to ensure last line finishes speaking
-        setTimeout(() => {
-          bgMusic.volume = 0.3;
-          bgMusic.currentTime = 0;
-          bgMusic.play(); // finally play music
-          replayBtn.style.display = "inline-block";
-        }, 1000);
+        speakFullLetter(replayBtn);
       }
+    }
+
+    function speakFullLetter(replayBtn) {
+      const utter = new SpeechSynthesisUtterance(letterText);
+      if (voice) utter.voice = voice;
+      utter.rate = 1;
+      utter.pitch = 1;
+
+      utter.onend = () => {
+        bgMusic.volume = 0.3;
+        bgMusic.currentTime = 0;
+        bgMusic.play();
+        replayBtn.style.display = "inline-block";
+      };
+
+      synth.speak(utter);
     }
 
     function replayLetter() {
       speechSynthesis.cancel();
       clearTimeout(typingInterval);
-      bgMusic.pause(); // stop music again
+      bgMusic.pause();
       startLetter();
     }
 
