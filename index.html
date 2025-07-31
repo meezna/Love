@@ -61,7 +61,7 @@
   </style>
 </head>
 <body>
-  <audio id="bg-music" src="grx.mp3" loop></audio>
+  <audio id="bg-music" src="Grx.mp3" loop></audio>
 
   <div class="input-section" id="inputSection">
     <h2>What’s your name?</h2>
@@ -73,6 +73,7 @@
 
   <div class="notebook" id="letter">
     <div class="entry" id="typedText"></div>
+    <button id="replayBtn" onclick="replayLetter()" style="display:none; margin-top: 2rem;">🔁 Replay Letter</button>
   </div>
 
   <script>
@@ -94,7 +95,8 @@ you’ve touched places in my heart I didn’t know existed.
 And that’s what makes this connection so real.
 
 But lately, you’ve been busy in your own world,
-living a life that doesn't include me.
+living a life with shadow
+that doesn't include me.
 And I… I keep remembering you —
 wishing to speak, but afraid to cross a line.
 When we talk less, something inside me quietly breaks.
@@ -134,45 +136,63 @@ loves you — even in silence.
 Always yours,
 Sabdpremi`;
 
+    let synth, voice, index = 0, typingInterval;
+    const bgMusic = document.getElementById("bg-music");
+
     function checkName() {
       const input = document.getElementById("nameInput").value.trim();
       if (input.toLowerCase() === correctName.toLowerCase()) {
         document.getElementById("inputSection").style.display = "none";
         document.getElementById("letter").style.display = "block";
-        playLetter();
+        startLetter();
       } else {
         document.getElementById("message").innerText = "Oops! This is not for you 💔";
       }
     }
 
-    function playLetter() {
+    function startLetter() {
       const textBox = document.getElementById("typedText");
-      let index = 0;
-      const interval = setInterval(() => {
-        if (index < letterText.length) {
-          textBox.innerText += letterText.charAt(index);
-          index++;
-        } else {
-          clearInterval(interval);
-          speakLetter();
-        }
-      }, 30);
-      document.getElementById("bg-music").play();
+      const replayBtn = document.getElementById("replayBtn");
+      textBox.innerText = "";
+      replayBtn.style.display = "none";
+      index = 0;
+      synth = window.speechSynthesis;
+      voice = synth.getVoices().find(v =>
+        v.name.toLowerCase().includes("daniel") ||
+        v.name.toLowerCase().includes("google us english") ||
+        v.name.toLowerCase().includes("english") && !v.name.toLowerCase().includes("female")
+      );
+
+      bgMusic.currentTime = 0;
+      bgMusic.play();
+      speakWhileTyping(textBox, replayBtn);
     }
 
-    function speakLetter() {
-      const utterance = new SpeechSynthesisUtterance(letterText);
-      utterance.lang = 'en-US';
-      utterance.rate = 1;
-      utterance.pitch = 1;
-      const voices = speechSynthesis.getVoices();
-      const femaleVoice = voices.find(v =>
-        v.name.toLowerCase().includes("female") ||
-        v.name.toLowerCase().includes("samantha") ||
-        v.gender === 'female'
-      );
-      if (femaleVoice) utterance.voice = femaleVoice;
-      speechSynthesis.speak(utterance);
+    function speakWhileTyping(textBox, replayBtn) {
+      if (index < letterText.length) {
+        const char = letterText.charAt(index);
+        textBox.innerText += char;
+
+        if (char === '.' || char === '\n' || char === '?' || char === '!') {
+          const lastLine = textBox.innerText.split('\n').slice(-1)[0].trim();
+          const utter = new SpeechSynthesisUtterance(lastLine);
+          if (voice) utter.voice = voice;
+          utter.rate = 1;
+          utter.pitch = 1;
+          synth.speak(utter);
+        }
+
+        index++;
+        typingInterval = setTimeout(() => speakWhileTyping(textBox, replayBtn), 30);
+      } else {
+        replayBtn.style.display = "inline-block";
+      }
+    }
+
+    function replayLetter() {
+      speechSynthesis.cancel();
+      clearTimeout(typingInterval);
+      startLetter();
     }
 
     window.speechSynthesis.onvoiceschanged = () => {};
