@@ -163,9 +163,7 @@ Sabdpremi`;
         v.name.toLowerCase().includes("english") && !v.name.toLowerCase().includes("female")
       );
 
-      bgMusic.currentTime = 0;
-      bgMusic.volume = 0.2;
-      bgMusic.pause(); // mute music during speaking
+      bgMusic.pause(); // no music at all during speaking
       speakWhileTyping(textBox, replayBtn);
     }
 
@@ -186,17 +184,20 @@ Sabdpremi`;
         index++;
         typingInterval = setTimeout(() => speakWhileTyping(textBox, replayBtn), 30);
       } else {
+        // Wait a bit to ensure last line finishes speaking
         setTimeout(() => {
-          bgMusic.play(); // resume music after finish
-        }, 500);
-        replayBtn.style.display = "inline-block";
+          bgMusic.volume = 0.3;
+          bgMusic.currentTime = 0;
+          bgMusic.play(); // finally play music
+          replayBtn.style.display = "inline-block";
+        }, 1000);
       }
     }
 
     function replayLetter() {
       speechSynthesis.cancel();
       clearTimeout(typingInterval);
-      bgMusic.pause(); // pause again on replay
+      bgMusic.pause(); // stop music again
       startLetter();
     }
 
