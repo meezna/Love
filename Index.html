@@ -62,6 +62,7 @@
 </head>
 <body>
   <audio id="bg-music" src="grx.mp3" loop></audio>
+
   <div class="input-section" id="inputSection">
     <h2>What’s your name?</h2>
     <input type="text" id="nameInput" placeholder="Enter your full name" />
@@ -165,7 +166,11 @@ Sabdpremi`;
       utterance.rate = 1;
       utterance.pitch = 1;
       const voices = speechSynthesis.getVoices();
-      const femaleVoice = voices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("samantha") || v.gender === 'female');
+      const femaleVoice = voices.find(v =>
+        v.name.toLowerCase().includes("female") ||
+        v.name.toLowerCase().includes("samantha") ||
+        v.gender === 'female'
+      );
       if (femaleVoice) utterance.voice = femaleVoice;
       speechSynthesis.speak(utterance);
     }
