@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You 🌸</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://www.transparenttextures.com/patterns/white-diamond.png'), floralwhite;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .notebook {
+      background: #fffaf0;
+      border: 2px solid #f8c8dc;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+      padding: 2rem;
+      max-width: 700px;
+      width: 100%;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      display: none;
+      position: relative;
+    }
+    .entry {
+      font-size: 1.1rem;
+      color: #4b2e2e;
+    }
+    .input-section {
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #f48fb1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .message {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      color: #c62828;
+    }
+  </style>
+</head>
+<body>
+  <audio id="bg-music" src="grx.mp3" loop></audio>
+  <div class="input-section" id="inputSection">
+    <h2>What’s your name?</h2>
+    <input type="text" id="nameInput" placeholder="Enter your full name" />
+    <br />
+    <button onclick="checkName()">Submit</button>
+    <div class="message" id="message"></div>
+  </div>
+
+  <div class="notebook" id="letter">
+    <div class="entry" id="typedText"></div>
+  </div>
+
+  <script>
+    const correctName = "Manju Gurung";
+    const letterText = `Dear Meezna,
+
+How do I begin...
+Ever since you came into my life,
+my words stopped belonging to anyone else.
+You are the only one whose silence feels like poetry to me.
+Talking to you feels like I'm speaking to my own soul.
+
+Every moment we’ve shared in words —
+the laughter, the silence,
+they’ve all become quiet reasons for me to keep going.
+
+Even without a physical meeting,
+you’ve touched places in my heart I didn’t know existed.
+And that’s what makes this connection so real.
+
+But lately, you’ve been busy in your own world,
+living a life that doesn't include me.
+And I… I keep remembering you —
+wishing to speak, but afraid to cross a line.
+When we talk less, something inside me quietly breaks.
+
+I know...
+I'm just a "friend" in your world.
+But my heart never settled for that.
+It keeps calling you “mine” —
+not to claim, but to cherish.
+Like someone who never stood beside you,
+yet feels close in every heartbeat.
+
+Sometimes I wonder —
+is this love, or is it longing?
+Or a beautiful curse wrapped in care?
+
+Maybe I’m selfish —
+not because I want you for myself,
+but because I don’t want to lose this bond.
+
+But I’ve never wanted to take anything from you,
+I just wanted to stay close to your smile.
+
+This isn't just conversation —
+it's a connection, and it lives inside me.
+
+---
+
+Meezna,
+If I ever get another life,
+I’d still choose to be Sabdpremi —
+the one who writes for you,
+thinks of you,
+waits for you,
+loves you — even in silence.
+
+Always yours,
+Sabdpremi`;
+
+    function checkName() {
+      const input = document.getElementById("nameInput").value.trim();
+      if (input.toLowerCase() === correctName.toLowerCase()) {
+        document.getElementById("inputSection").style.display = "none";
+        document.getElementById("letter").style.display = "block";
+        playLetter();
+      } else {
+        document.getElementById("message").innerText = "Oops! This is not for you 💔";
+      }
+    }
+
+    function playLetter() {
+      const textBox = document.getElementById("typedText");
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index < letterText.length) {
+          textBox.innerText += letterText.charAt(index);
+          index++;
+        } else {
+          clearInterval(interval);
+          speakLetter();
+        }
+      }, 30);
+      document.getElementById("bg-music").play();
+    }
+
+    function speakLetter() {
+      const utterance = new SpeechSynthesisUtterance(letterText);
+      utterance.lang = 'en-US';
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      const voices = speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v => v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("samantha") || v.gender === 'female');
+      if (femaleVoice) utterance.voice = femaleVoice;
+      speechSynthesis.speak(utterance);
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {};
+  </script>
+</body>
+</html>
