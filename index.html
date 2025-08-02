@@ -60,16 +60,19 @@
   </style>
 </head>
 <body>
-  <audio id="bg-music" src="Grx.mp3" loop></audio>  <div class="input-section" id="inputSection">
+  <audio id="bg-music" src="Grx.mp3" loop></audio>
+  <div class="input-section" id="inputSection">
     <h2>What’s your name?</h2>
     <input type="text" id="nameInput" placeholder="Enter your full name" />
     <br />
     <button onclick="checkName()">Submit</button>
     <div class="message" id="message"></div>
-  </div>  <div class="notebook" id="letter">
+  </div>
+  <div class="notebook" id="letter">
     <div class="entry" id="typedText"></div>
     <button id="replayBtn" onclick="replayLetter()" style="display:none; margin-top: 2rem;">🔁 Replay Letter</button>
-  </div>  <script>
+  </div>
+  <script>
     const correctName = "Manju Gurung";
     const letterText = `Dear Meezna,
 
@@ -151,16 +154,17 @@ Sabdpremi`;
       index = 0;
       synth = window.speechSynthesis;
 
+      // Select preferred voice or fallback
       voice = synth.getVoices().find(v =>
         v.name.toLowerCase().includes("daniel") ||
         v.name.toLowerCase().includes("google us english") ||
-        v.name.toLowerCase().includes("english") && !v.name.toLowerCase().includes("female")
+        (v.lang === "en-US" && !v.name.toLowerCase().includes("female"))
       );
 
       bgMusic.pause();
       bgMusic.currentTime = 0;
 
-      const totalDuration = 100000; // 10seconds
+      const totalDuration = 10000; // 10 seconds
       const intervalTime = totalDuration / letterText.length;
 
       typeLetter(textBox, replayBtn, intervalTime);
@@ -199,6 +203,8 @@ Sabdpremi`;
       startLetter();
     }
 
+    // Load voices before first use
     window.speechSynthesis.onvoiceschanged = () => {};
-  </script></body>
+  </script>
+</body>
 </html>
