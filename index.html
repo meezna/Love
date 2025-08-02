@@ -14,6 +14,8 @@
       align-items: center;
       min-height: 100vh;
       padding: 2rem;
+      overflow: hidden;
+      position: relative;
     }
     .notebook {
       background: #fffaf0;
@@ -27,6 +29,7 @@
       white-space: pre-wrap;
       display: none;
       position: relative;
+      z-index: 1;
     }
     .entry {
       font-size: 1.1rem;
@@ -34,6 +37,7 @@
     }
     .input-section {
       text-align: center;
+      z-index: 1;
     }
     input[type="text"] {
       padding: 10px;
@@ -56,6 +60,43 @@
       font-size: 1.2rem;
       margin-top: 20px;
       color: #c62828;
+    }
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      transform: rotate(45deg);
+      animation: floatUp 4s linear infinite;
+      opacity: 0.8;
+      border-radius: 50%;
+    }
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+    }
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(45deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(45deg);
+        opacity: 0;
+      }
     }
   </style>
 </head>
@@ -163,9 +204,10 @@ Sabdpremi`;
       bgMusic.pause();
       bgMusic.currentTime = 0;
 
-      const totalDuration = 5000; // 5 seconds
+      const totalDuration = 3500; // 3.5 seconds
       const intervalTime = totalDuration / letterText.length;
 
+      generateHearts();
       typeLetter(textBox, replayBtn, intervalTime);
     }
 
@@ -182,16 +224,49 @@ Sabdpremi`;
     function speakFullLetter(replayBtn) {
       const utter = new SpeechSynthesisUtterance(letterText);
       if (voice) utter.voice = voice;
-      utter.rate = 1;
-      utter.pitch = 1;
+      utter.rate = 1.0; // Normal speed
+      utter.pitch = 1.0; // Normal pitch
 
       utter.onend = () => {
-        bgMusic.volume = 0.3;
-        bgMusic.play();
         replayBtn.style.display = "inline-block";
+        fadeInMusic(); // Play music after voice ends
       };
 
       synth.speak(utter);
+    }
+
+    function fadeInMusic() {
+      let vol = 0;
+      bgMusic.volume = 0;
+      bgMusic.play().then(() => {
+        const fadeIn = setInterval(() => {
+          vol += 0.05;
+          if (vol >= 0.3) {
+            bgMusic.volume = 0.3;
+            clearInterval(fadeIn);
+          } else {
+            bgMusic.volume = vol;
+          }
+        }, 200);
+      }).catch(error => {
+        console.log("Music autoplay blocked. User interaction needed.");
+      });
+    }
+
+    function generateHearts() {
+      const heartInterval = setInterval(() => {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.bottom = "0px";
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 4000);
+      }, 300);
+
+      setTimeout(() => clearInterval(heartInterval), 20000); // Stop after 20 seconds
     }
 
     function replayLetter() {
