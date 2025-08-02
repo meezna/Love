@@ -182,30 +182,16 @@ Sabdpremi`;
     function speakFullLetter(replayBtn) {
       const utter = new SpeechSynthesisUtterance(letterText);
       if (voice) utter.voice = voice;
-      utter.rate = 0.85; // Romantic slow pace
-      utter.pitch = 0.9; // Slightly lower pitch for warmth
+      utter.rate = 1;
+      utter.pitch = 1;
 
       utter.onend = () => {
-        fadeInMusic();
+        bgMusic.volume = 0.3;
+        bgMusic.play();
         replayBtn.style.display = "inline-block";
       };
 
       synth.speak(utter);
-    }
-
-    function fadeInMusic() {
-      let vol = 0;
-      bgMusic.volume = 0;
-      bgMusic.play();
-      const fadeIn = setInterval(() => {
-        vol += 0.05;
-        if (vol >= 0.3) {
-          bgMusic.volume = 0.3;
-          clearInterval(fadeIn);
-        } else {
-          bgMusic.volume = vol;
-        }
-      }, 200);
     }
 
     function replayLetter() {
